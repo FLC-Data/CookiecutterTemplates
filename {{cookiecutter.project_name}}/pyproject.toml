@@ -7,9 +7,6 @@ maintainers = ["FabioCaffarello <fabio.caffarello@gmail.com>"]
 readme = "README.md"
 repository = "https://github.com/{{ cookiecutter.organization }}/{{ cookiecutter.project_name }}"
 
-  [[tool.poetry.packages]]
-  include = "modules"
-
   [tool.poetry.dependencies]
   python = "^3.8"
   Flask = "^2.1.1"
