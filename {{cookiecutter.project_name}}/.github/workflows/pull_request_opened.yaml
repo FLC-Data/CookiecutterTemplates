@@ -21,14 +21,12 @@ jobs:
         with:
           virtualenvs-in-project: true
 
-# {% raw %}
       - name: Load Cached Venv
         id: cached-poetry-dependencies
         uses: actions/cache@v2
         with:
           path: .venv
-          key: venv-${{ hashFiles('**/poetry.lock') }}
-# {% endraw %}
+          key: venv-${% raw %}{{ hashFiles('**/poetry.lock') }}{% endraw %}
 
       - name: Install Dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
