@@ -1,0 +1,6 @@
+{
+    "project_name": "ProjectName",
+    "organization": "FLC-Data",
+    "organization_slug": "{{ cookiecutter.organization|trim|lower|replace('-', '') }}",
+    "project_description": "Briefly describe your project and what it is for"
+}

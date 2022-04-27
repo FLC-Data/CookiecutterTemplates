@@ -1,0 +1,118 @@
+name: Pull Request Continuous Integration
+on:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+
+jobs:
+  # Run Linter
+  linter-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.5
+
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-in-project: true
+
+      - name: Load Cached Venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${% raw %}{{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction
+
+      - name: Linter
+        run: poetry run flake8
+
+  # Unit Tests
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.5
+
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-in-project: true
+
+      - name: Load Cached Venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${% raw %}{{ hashFiles('**/poetry.lock') }}{% endraw %}
+
+      - name: Install Dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction
+
+      - name: Unit Test
+        run: poetry run pytest ml_app/tests
+
+  # # Update Pull Request Description with the Jira Issue Description.
+  # jira_issue_pr:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 3.8.5
+
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v2
+
+  #     - name: Install Poetry
+  #       uses: snok/install-poetry@v1
+  #       with:
+  #         virtualenvs-in-project: true
+
+  #     - name: Load Cached Venv
+  #       id: cached-poetry-dependencies
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: .venv
+  #         key: venv-${{ hashFiles('**/poetry.lock') }}
+
+  #     - name: Install Dependencies
+  #       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+  #       run: poetry install --no-interaction
+
+  #     - name: Get Current Branch
+  #       uses: bvkimball/branch-vars@1.0.1
+
+  #     - name: Wrangling Branch Name
+  #       id: branch
+  #       run:  echo "::set-output name=branch_issue::$(echo ${CURRENT_BRANCH} | grep -o -E '[A-Z0-9\-]+')"
+
+  #     - name: Echo Wrangling Branch Name
+  #       run: echo ${{ steps.branch.outputs.branch_issue }}
+
+  #     - name: Get Jira Issue Description
+  #       id: jira
+  #       run: echo "::set-output name=issue::$(poetry run jira-issue-script ${{ steps.branch.outputs.branch_issue }} ${{ secrets.FLC_JIRA_TOKEN }} ${{ secrets.FLC_JIRA_EMAIL }})"
+
+  #     - name: Echo Jira Issue Description
+  #       run: echo "${{ steps.jira.outputs.issue }}"
+
+  #     - name: Update Pull Request Description
+  #       uses: riskledger/update-pr-description@v2
+  #       with:
+  #         body: "${{ steps.jira.outputs.issue }}"
+  #         token: ${{ secrets.FLC_GITHUB_TOKEN }}
