@@ -1,5 +1,7 @@
 ### Generate with: https://www.toptal.com/developers/gitignore
 
+sandbox/
+data/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -116,6 +118,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.env
 .venv
 env/
 venv/
